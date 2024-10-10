@@ -1,23 +1,24 @@
 import { Request, Response } from 'express';
-import { UserRepository } from '../repositories/userRepository';
+import pool from '../config/database';
 
-const userRepository = new UserRepository();
-
+// Função para obter todos os usuários
 export const getUsers = async (req: Request, res: Response) => {
   try {
-    const users = await userRepository.getAllUsers();
-    res.status(200).json(users);
+    const { rows } = await pool.query('SELECT * FROM users');
+    res.status(200).json(rows);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Erro ao buscar usuários' });
   }
 };
 
+// Função para adicionar um novo usuário
 export const addUser = async (req: Request, res: Response) => {
   const { name, email } = req.body;
   try {
-    const user = await userRepository.addUser(name, email);
-    res.status(201).json(user);
+    const queryText = 'INSERT INTO users(name, email) VALUES($1, $2) RETURNING *';
+    const { rows } = await pool.query(queryText, [name, email]);
+    res.status(201).json(rows[0]);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Erro ao adicionar usuário' });
