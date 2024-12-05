@@ -1,4 +1,3 @@
-import { table } from 'console';
 import pool from '../config/database';
 
 const createUsersTable = async () => {
@@ -8,7 +7,8 @@ const createUsersTable = async () => {
       CREATE TABLE IF NOT EXISTS users (
         id SERIAL PRIMARY KEY,
         name VARCHAR(100) NOT NULL,
-        email VARCHAR(100) UNIQUE NOT NULL
+        email VARCHAR(100) UNIQUE NOT NULL,
+        passwordhash VARCHAR(100) NOT NULL
       );
     `;
     await client.query(queryText);
@@ -21,4 +21,3 @@ const createUsersTable = async () => {
 };
 
 createUsersTable().then(() => process.exit(0));
-
